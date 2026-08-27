@@ -48,7 +48,7 @@ so onboarding a store is filling in a form, not writing platform code. It also
 declares what it can do, and the platform turns off the rest.
 
 ```
-platform-backend ──HMAC-signed POST──▶ your adapter ──▶ your store
+backend ──HMAC-signed POST──▶ your adapter ──▶ your store
                  ◀── normalized ──────
 ```
 
