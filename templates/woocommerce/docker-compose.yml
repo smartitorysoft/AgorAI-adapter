@@ -1,0 +1,8 @@
+services:
+  adapter:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${PORT:-4000}:4000"

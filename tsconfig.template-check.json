@@ -1,0 +1,13 @@
+{
+  "extends": "./templates/minimal/tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "baseUrl": ".",
+    "rootDir": "./templates",
+    "paths": {
+      "@smartitory/agorai-adapter": ["./dist/index.d.ts"],
+      "@smartitory/agorai-adapter/*": ["./dist/*"]
+    }
+  },
+  "include": ["templates/*/src/**/*"]
+}

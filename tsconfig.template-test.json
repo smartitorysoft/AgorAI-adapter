@@ -1,0 +1,14 @@
+{
+  "extends": "./templates/woocommerce/tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "baseUrl": ".",
+    "rootDir": "./templates/woocommerce/src",
+    "outDir": "./test/.build/woocommerce",
+    "paths": {
+      "@smartitory/agorai-adapter": ["./dist/index.d.ts"],
+      "@smartitory/agorai-adapter/*": ["./dist/*"]
+    }
+  },
+  "include": ["templates/woocommerce/src/**/*"]
+}
