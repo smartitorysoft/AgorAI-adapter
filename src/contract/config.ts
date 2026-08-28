@@ -36,6 +36,19 @@ export type ConfigField = {
   help?: LocalizedText
   /** Prefilled in the form. Never use this for a secret. */
   default?: string
+  /**
+   * The platform mints this value instead of the admin inventing one.
+   *
+   * On the first save that leaves it empty the platform writes a random
+   * 32-byte hex string. The field still renders and is still editable — a shop
+   * migrating from a secret it already has must be able to paste that one in —
+   * but nobody has to run `openssl rand` to get started, and nobody ends up
+   * with `changeme` in production.
+   *
+   * Only meaningful on `secret`. A generated value is stored and read back
+   * exactly like a typed one, so nothing downstream knows the difference.
+   */
+  generated?: boolean
   /** Required when `type` is `'select'`, ignored otherwise. */
   options?: ConfigFieldOption[]
   validate?: ConfigFieldValidation

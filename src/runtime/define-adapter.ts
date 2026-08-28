@@ -85,6 +85,14 @@ export function buildManifest(adapter: AgorAIAdapter): AdapterManifest {
     ...(adapter.productAttributes
       ? { productAttributes: adapter.productAttributes }
       : {}),
+    /*
+     * Declared only when there is also something to render them with. An
+     * adapter that lists a file and cannot produce it would put a button on the
+     * Store screen that fails when pressed, which is worse than no button.
+     */
+    ...(adapter.downloads?.length && adapter.render
+      ? { downloads: adapter.downloads }
+      : {}),
     ...(adapter.documentationUrl
       ? { documentationUrl: adapter.documentationUrl }
       : {}),

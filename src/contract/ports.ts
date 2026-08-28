@@ -2,7 +2,11 @@ import type { CartPort } from './cart'
 import type { ConfigSchemaInput, LocalizedText } from './config'
 import type { StoreContext } from './context'
 import type { CustomerPort } from './customer'
-import type { AdapterHealthResult, ProductAttributeHint } from './manifest'
+import type {
+  AdapterDownload,
+  AdapterHealthResult,
+  ProductAttributeHint,
+} from './manifest'
 import type { NavigationKind, NavigationPort } from './navigation'
 import type {
   AdapterCategory,
@@ -10,6 +14,7 @@ import type {
   CatalogListOptions,
   CatalogPage,
 } from './product'
+import type { DownloadTarget } from './wire'
 
 export type DeclaredCapabilities = {
   /** `catalog.list` honours `updatedSince`. Without it every sync is a full one. */
@@ -27,6 +32,35 @@ export type DeclaredCapabilities = {
   navigation?: NavigationKind[]
   /** The adapter exposes a store-facing webhook endpoint. */
   webhooks?: boolean
+}
+
+/** What `downloads.render` hands back. */
+export type RenderedDownload = {
+  /** Overrides the manifest's `filename` when the name depends on the config. */
+  filename?: string
+  /**
+   * The file itself.
+   *
+   * Text by default. A binary artefact — a zip, say — sets `encoding` to
+   * `base64` and puts base64 here, because this crosses a JSON body and the
+   * signature covers the raw bytes of that body.
+   */
+  body: string
+  encoding?: 'utf8' | 'base64'
+}
+
+export type DownloadsPort = {
+  /**
+   * Render one declared download for one project.
+   *
+   * `key` is always one the adapter declared — the platform rejects anything
+   * else before this is reached — so an unknown key here is a bug, not input.
+   */
+  render(
+    ctx: StoreContext,
+    key: string,
+    target: DownloadTarget
+  ): Promise<RenderedDownload>
 }
 
 export type CatalogPort = {
@@ -80,6 +114,17 @@ export type AdapterDefinition = {
    * which is a weaker check but better than none.
    */
   health?(ctx: StoreContext): Promise<AdapterHealthResult>
+
+  /**
+   * Files the shop installs on its own side.
+   *
+   * Declared in `downloads`, rendered by `render`. The two are separate because
+   * the platform has to list them before anybody asks for one — the Store
+   * screen shows the description and the button from the manifest alone, and
+   * only calls `render` when the button is pressed.
+   */
+  downloads?: AdapterDownload[]
+  render?: DownloadsPort
 
   catalog: CatalogPort
   cart?: CartPort

@@ -28,6 +28,35 @@ export type ProductAttributeHint = {
   suggestOnCard?: boolean
 }
 
+/**
+ * A file the shop has to install somewhere the platform cannot reach.
+ *
+ * The platform lists these on the Store screen and serves them, but never
+ * writes one: the contents are as store-specific as the config schema is — a
+ * WordPress mu-plugin, a Shopify theme snippet, an nginx include — so the
+ * adapter renders its own and the core stays free of every one of them.
+ *
+ * Rendering happens per download rather than once at connect time, so a file
+ * carrying a rotated secret is correct at the moment it is fetched.
+ */
+export type AdapterDownload = {
+  /** Stable key, used in the URL the platform serves this from. */
+  key: string
+  /** Suggested filename, e.g. `agorai-config.php`. */
+  filename: string
+  label: LocalizedText
+  /** Where the file goes and what it is for. Shown next to the button. */
+  description: LocalizedText
+  /** e.g. `text/plain`, `application/zip`. */
+  contentType: string
+  /**
+   * The file carries a credential. The UI says so, and says that rotating it
+   * means downloading again — a stale copy fails as "every shopper is a
+   * guest", which explains itself to nobody.
+   */
+  containsSecret?: boolean
+}
+
 export type AdapterCapabilities = {
   catalog: {
     /** `catalog.list` honours `updatedSince`, so syncs can be incremental. */
@@ -68,6 +97,8 @@ export type AdapterManifest = {
   configSchema: ConfigSchema
   capabilities: AdapterCapabilities
   productAttributes?: ProductAttributeHint[]
+  /** Files the shop installs on its own side. Rendered by the adapter. */
+  downloads?: AdapterDownload[]
   /** Optional link to the adapter's setup docs, shown on the Store screen. */
   documentationUrl?: string
 }

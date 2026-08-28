@@ -31,6 +31,7 @@ export const ADAPTER_ROUTES = {
   navigationResolve: '/v1/navigation/resolve',
   customerResolve: '/v1/customer/resolve',
   customerOrders: '/v1/customer/orders',
+  download: '/v1/download',
   liveness: '/healthz',
 } as const
 
@@ -41,6 +42,34 @@ export const TIMESTAMP_HEADER = 'x-agorai-timestamp'
 
 /** Every request body starts with the context. */
 export type WithContext<T = unknown> = { context: StoreContextData } & T
+
+/**
+ * How this project is addressed from a shopper's browser.
+ *
+ * Handed to `downloads.render` and nowhere else. An adapter writing a file the
+ * storefront will load needs the platform's address and the project's public
+ * key to put in it, and neither is knowable from the store's own config — but
+ * they have no business travelling on every catalogue page either, so they ride
+ * on the one call that needs them.
+ */
+export type DownloadTarget = {
+  /** The platform's public base URL, no trailing slash. */
+  platformUrl: string
+  /** This project's public key, the `pk_live_…` that ends up in page source. */
+  projectKey: string
+}
+
+export type DownloadRequest = WithContext<{
+  key: string
+  target: DownloadTarget
+}>
+
+export type DownloadResponse = {
+  filename: string
+  contentType: string
+  body: string
+  encoding: 'utf8' | 'base64'
+}
 
 export type CatalogListRequest = WithContext<{ options?: CatalogListOptions }>
 export type CatalogGetRequest = WithContext<{ ids: string[] }>

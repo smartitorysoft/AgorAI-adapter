@@ -26,6 +26,7 @@ import {
   type AgorAIAdapter,
   type CustomerOrdersResponse,
   type CustomerResolveResponse,
+  type DownloadResponse,
   type NavigationResolveResponse,
 } from '../contract'
 import { ADAPTER } from './adapter.token'
@@ -38,6 +39,7 @@ import {
   ContextRequestDto,
   CustomerOrdersDto,
   CustomerResolveDto,
+  DownloadDto,
   NavigationResolveDto,
   type StoreContextDto,
 } from './dto'
@@ -100,6 +102,44 @@ export class AdapterController {
       warnings: [
         'This adapter has no health check of its own, so only catalogue access was verified.',
       ],
+    }
+  }
+
+  /**
+   * Render one of the files this adapter declared.
+   *
+   * Signed like every other POST, and for the ordinary reason: the body
+   * carries the project's config, and a rendered file is very often that
+   * config with a secret in it.
+   *
+   * The key is checked against the declared list rather than passed through.
+   * `render` is adapter-authored code taking a string from a request, and an
+   * adapter that reached for the filesystem with it should be given a key it
+   * has already published, not an arbitrary one.
+   */
+  @Post(ADAPTER_ROUTES.download)
+  @HttpCode(HttpStatus.OK)
+  async download(@Body() dto: DownloadDto): Promise<DownloadResponse> {
+    const declared = this.adapter.downloads?.find(
+      (entry) => entry.key === dto.key
+    )
+    if (!declared || !this.adapter.render) {
+      throw new AdapterUnsupportedError(
+        `This adapter does not offer a download named "${dto.key}".`
+      )
+    }
+
+    const rendered = await this.adapter.render.render(
+      context(dto.context),
+      declared.key,
+      dto.target
+    )
+
+    return {
+      filename: rendered.filename ?? declared.filename,
+      contentType: declared.contentType,
+      body: rendered.body,
+      encoding: rendered.encoding ?? 'utf8',
     }
   }
 
