@@ -95,6 +95,8 @@ export type AdapterDefinition = {
   version: string
   /** A `data:image/…` URI or an `https://` URL. See `AdapterManifest.logo`. */
   logo?: string
+  /** The full lockup, same rules. See `AdapterManifest.wordmark`. */
+  wordmark?: string
   /** `#rgb` or `#rrggbb`. See `AdapterManifest.brandColor`. */
   brandColor?: string
   documentationUrl?: string

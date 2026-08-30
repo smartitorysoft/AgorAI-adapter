@@ -142,6 +142,17 @@ export type AdapterManifest = {
    */
   logo?: string
   /**
+   * The adapter's full lockup — its mark and its name, set the way the brand
+   * sets it.
+   *
+   * Same rules as `logo`, and it replaces the picker card's mark *and* its
+   * text rather than sitting beside them: a lockup already says the name, in
+   * letterforms a shop owner recognises faster than they read. Supply one only
+   * if it is the real thing. `logo` stays the fallback and is what compact
+   * places use, so an adapter with a wordmark still wants a square mark.
+   */
+  wordmark?: string
+  /**
    * The adapter's brand colour as `#rgb` or `#rrggbb`.
    *
    * Used to tint its card on the platform picker, so a shop owner recognises

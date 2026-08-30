@@ -86,12 +86,14 @@ function assertValid(definition: AdapterDefinition): void {
   assertStoreUrlRole(definition)
   assertDownloadDependencies(definition)
 
-  const { logo } = definition
-  if (logo && !LOGO_SCHEMES.some((scheme) => logo.startsWith(scheme))) {
-    throw new Error(
-      'Adapter logo must be a data:image/… URI or an https:// URL, got ' +
-        `"${logo.slice(0, 32)}…".`
-    )
+  for (const field of ['logo', 'wordmark'] as const) {
+    const value = definition[field]
+    if (value && !LOGO_SCHEMES.some((scheme) => value.startsWith(scheme))) {
+      throw new Error(
+        `Adapter ${field} must be a data:image/… URI or an https:// URL, got ` +
+          `"${value.slice(0, 32)}…".`
+      )
+    }
   }
 
   const { brandColor } = definition
@@ -190,6 +192,7 @@ export function buildManifest(adapter: AgorAIAdapter): AdapterManifest {
       ? { downloads: adapter.downloads.map((entry) => toDownload(entry)) }
       : {}),
     ...(adapter.logo ? { logo: adapter.logo } : {}),
+    ...(adapter.wordmark ? { wordmark: adapter.wordmark } : {}),
     ...(adapter.brandColor ? { brandColor: adapter.brandColor } : {}),
     ...(adapter.documentationUrl
       ? { documentationUrl: adapter.documentationUrl }

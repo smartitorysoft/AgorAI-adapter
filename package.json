@@ -1,6 +1,6 @@
 {
   "name": "@smartitory/agorai-adapter",
-  "version": "0.3.0",
+  "version": "0.5.0",
   "author": "Smartitory",
   "license": "MIT",
   "description": "SDK for building an AgorAI store adapter: implement a few interfaces, call run(), deploy one container.",

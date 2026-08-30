@@ -347,7 +347,7 @@ const cartCheck: Check = {
       const problems = validateRecipe(cart.readRecipe(ctx), 'readRecipe')
       const target = options.cartProductId ?? cartableProduct(products)?.id
       if (target) {
-        const recipes = cart.writeRecipe(
+        const recipes = await cart.writeRecipe(
           ctx,
           { productId: target, mode: 'set', quantity: 1 },
           {

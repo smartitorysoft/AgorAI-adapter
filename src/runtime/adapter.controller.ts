@@ -191,7 +191,11 @@ export class AdapterController {
     const ctx = context(dto.context)
 
     if (isClientCart(cart)) {
-      const recipes = cart.writeRecipe(ctx, dto.op, dto.cart ?? EMPTY_CART)
+      const recipes = await cart.writeRecipe(
+        ctx,
+        dto.op,
+        dto.cart ?? EMPTY_CART
+      )
       return { mode: 'client', recipes: asArray(recipes) }
     }
     return { mode: 'server', cart: await cart.apply(ctx, dto.op) }

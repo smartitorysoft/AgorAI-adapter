@@ -94,12 +94,17 @@ export type ClientCartPort = {
    * on it: WooCommerce adds with `cart/add-item` but updates an existing line
    * with `cart/update-item` and its line key. Returning several recipes runs
    * them in order.
+   *
+   * May be async, because composing the request sometimes needs one lookup the
+   * cart cannot supply: Shopify's cart adds by *variant* id while the platform
+   * knows the product by the id the catalogue was indexed under. Reach for it
+   * only when there is no other way — this runs while a shopper waits.
    */
   writeRecipe(
     ctx: StoreContext,
     op: CartLineOp,
     cart: AdapterCart
-  ): CartRecipe | CartRecipe[]
+  ): CartRecipe | CartRecipe[] | Promise<CartRecipe | CartRecipe[]>
   /** How to empty the cart. */
   clearRecipe?(ctx: StoreContext): CartRecipe | CartRecipe[]
   /**
