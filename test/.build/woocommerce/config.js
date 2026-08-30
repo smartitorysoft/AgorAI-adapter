@@ -30,6 +30,10 @@ exports.CONFIG = {
     WOOCOMMERCE_URL: {
         type: 'url',
         required: true,
+        // The platform reads this one by meaning rather than by name: it is the
+        // address a shopper's browser loads pages from, so its origin is the one
+        // authorised to embed the widget.
+        role: 'storeUrl',
         label: { en: 'Store URL', hu: 'Webáruház URL' },
         help: {
             en: 'Your shop’s address, e.g. https://shop.example.com — no trailing path.',

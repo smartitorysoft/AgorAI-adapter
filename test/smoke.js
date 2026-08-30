@@ -51,6 +51,17 @@ const adapter = defineAdapter({
   version: '0.0.1',
   config: {
     STORE_API_URL: { type: 'url', required: true, label: { en: 'Store API URL' } },
+    // Two URLs, because a real adapter has two: the one it calls, and the one
+    // a shopper's browser loads pages from. Only the second can carry the
+    // role, and the testkit fails a manifest without it — an adapter that
+    // omits it leaves the platform unable to authorise the shop's own origin
+    // to embed the widget.
+    STORE_FRONTEND_URL: {
+      type: 'url',
+      required: true,
+      role: 'storeUrl',
+      label: { en: 'Storefront URL' },
+    },
     STORE_API_KEY: { type: 'secret', required: true, label: { en: 'API key' } },
   },
   capabilities: { navigation: ['cart', 'checkout', 'product', 'category'] },
@@ -136,7 +147,11 @@ function summarize(lines) {
 
 const CONTEXT = {
   projectId: 'proj-smoke',
-  config: { STORE_API_URL: 'http://localhost:9999', STORE_API_KEY: 'k' },
+  config: {
+    STORE_API_URL: 'http://localhost:9999',
+    STORE_FRONTEND_URL: 'https://shop.example',
+    STORE_API_KEY: 'k',
+  },
   locale: 'en',
   storeSession: { cartId: 'visitor-1' },
   requestId: 'req-1',

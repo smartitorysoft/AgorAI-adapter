@@ -39,6 +39,11 @@ const adapter = defineAdapter({
     STORE_API_URL: {
       type: 'url',
       required: true,
+      // The origin a shopper's browser loads pages from, which is what the
+      // platform adds to this project's allowed embed origins. Exactly one
+      // field may carry it, and an adapter with none fails the testkit's
+      // manifest check — the widget would simply never appear on the shop.
+      role: 'storeUrl',
       label: { en: 'Store API URL', hu: 'Bolt API URL' },
       help: {
         en: 'The base URL of your storefront, e.g. https://shop.example.com',

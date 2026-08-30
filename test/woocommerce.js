@@ -282,7 +282,18 @@ expect('the JSON token shape works too', () => {
 const clientModeAdapter = defineAdapter({
   name: 'woocommerce-template-under-test',
   version: '1.0.0',
-  config: {},
+  // The one setting this stand-in needs: something has to carry
+  // `role: 'storeUrl'` or the testkit's manifest check fails it, and a
+  // client-mode cart is exactly the case where that matters most — its recipes
+  // are performed against this origin, by the shopper's own browser.
+  config: {
+    WOOCOMMERCE_URL: {
+      type: 'url',
+      required: true,
+      role: 'storeUrl',
+      label: { en: 'Store URL' },
+    },
+  },
   capabilities: { navigation: ['cart', 'checkout'] },
   catalog: {
     list: async () => ({
@@ -299,7 +310,12 @@ const clientModeAdapter = defineAdapter({
 
 ;(async () => {
   const report = await checkAdapter(clientModeAdapter, {
-    context: { projectId: 'p1', config: {}, locale: 'en', requestId: 'r1' },
+    context: {
+      projectId: 'p1',
+      config: { WOOCOMMERCE_URL: 'https://shop.example' },
+      locale: 'en',
+      requestId: 'r1',
+    },
   })
   console.log('\n--- contract testkit, client-mode cart ---')
   console.log(formatReport(report))
