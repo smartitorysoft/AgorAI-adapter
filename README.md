@@ -28,7 +28,7 @@ run(adapter)
 ## Install
 
 ```bash
-pnpm add github:smartitorysoft/agorai-adapter#v0.5.4
+pnpm add github:smartitorysoft/agorai-adapter#v0.5.7
 ```
 
 Or start from a template — they include a Dockerfile, a compose file and a
