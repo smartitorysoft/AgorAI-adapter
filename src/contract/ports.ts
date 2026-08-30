@@ -93,6 +93,10 @@ export type AdapterDefinition = {
   name: string
   displayName?: LocalizedText
   version: string
+  /** A `data:image/…` URI or an `https://` URL. See `AdapterManifest.logo`. */
+  logo?: string
+  /** `#rgb` or `#rrggbb`. See `AdapterManifest.brandColor`. */
+  brandColor?: string
   documentationUrl?: string
   config: ConfigSchemaInput
   productAttributes?: ProductAttributeHint[]

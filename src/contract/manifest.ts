@@ -55,6 +55,39 @@ export type AdapterDownload = {
    * guest", which explains itself to nobody.
    */
   containsSecret?: boolean
+  /**
+   * Config keys whose values end up **inside** this file.
+   *
+   * A generated file is a copy, and a copy goes out of date the moment one of
+   * the values baked into it is edited. Nothing on either side can notice that
+   * on its own: the platform does not read the file and the shop does not
+   * re-fetch it, so a stale copy simply keeps working incorrectly — an old
+   * identity secret degrades to "every shopper is a guest", which explains
+   * itself to nobody. Declaring the dependency is what lets the Store screen
+   * say *download this again*.
+   *
+   * List optional keys too. Whether a value is required is a separate question
+   * — see `requires` — and an optional field that is nonetheless copied into
+   * the file still invalidates it when it changes.
+   */
+  dependsOn?: string[]
+  /**
+   * The subset of `dependsOn` that must hold a value before the file is worth
+   * downloading at all.
+   *
+   * Keys listed here are folded into `dependsOn` by `buildManifest`, so an
+   * adapter author cannot declare one without the other.
+   */
+  requires?: string[]
+  /**
+   * The version of the **generated artefact**, not of the adapter.
+   *
+   * Bump it when the code inside the file changes, and every shop still
+   * running the previous copy is told to download it again. Without it the
+   * platform can only notice a settings change, and a plugin whose code was
+   * fixed would sit unnoticed on every storefront that already had one.
+   */
+  version?: string
 }
 
 export type AdapterCapabilities = {
@@ -99,6 +132,23 @@ export type AdapterManifest = {
   productAttributes?: ProductAttributeHint[]
   /** Files the shop installs on its own side. Rendered by the adapter. */
   downloads?: AdapterDownload[]
+  /**
+   * The adapter's mark, shown on the Store screen's platform picker.
+   *
+   * A `data:image/…` URI or an `https://` URL. A data URI is the one to reach
+   * for: the picker is drawn before a project has connected to anything, so the
+   * platform serves the manifest's copy rather than letting a browser fetch
+   * from an address the admin is not supposed to see.
+   */
+  logo?: string
+  /**
+   * The adapter's brand colour as `#rgb` or `#rrggbb`.
+   *
+   * Used to tint its card on the platform picker, so a shop owner recognises
+   * the thing they already use rather than reading a list of names. Falls back
+   * to the platform's own accent when absent — never to a random colour.
+   */
+  brandColor?: string
   /** Optional link to the adapter's setup docs, shown on the Store screen. */
   documentationUrl?: string
 }

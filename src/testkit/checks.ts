@@ -66,6 +66,18 @@ const manifestCheck: Check = {
       )
     }
 
+    /*
+     * Not fatal, but worth saying out loud: without it the platform cannot
+     * authorise the shop's own origin to embed the widget, and the shop admin
+     * has to work out why the advisor never appears on their site.
+     */
+    if (!manifest.configSchema.some((field) => field.role === 'storeUrl')) {
+      problems.push(
+        "no config field carries role 'storeUrl', so the platform cannot " +
+          "authorise the shop's origin to embed the widget"
+      )
+    }
+
     return problems.length === 0
       ? pass(
           manifestCheck.name,

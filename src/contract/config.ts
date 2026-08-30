@@ -49,6 +49,16 @@ export type ConfigField = {
    * exactly like a typed one, so nothing downstream knows the difference.
    */
   generated?: boolean
+  /**
+   * This field holds the storefront's own address.
+   *
+   * The platform cannot otherwise tell which of an adapter's config keys is a
+   * URL a browser loads pages from, and it needs to: that origin is the one
+   * allowed to embed the widget, and a shop that has to work that out for
+   * itself gets a widget that silently never appears. At most one field per
+   * adapter may carry this, and it must be a required `url`.
+   */
+  role?: 'storeUrl'
   /** Required when `type` is `'select'`, ignored otherwise. */
   options?: ConfigFieldOption[]
   validate?: ConfigFieldValidation
