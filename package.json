@@ -1,6 +1,6 @@
 {
   "name": "@smartitory/agorai-adapter",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "author": "Smartitory",
   "license": "MIT",
   "description": "SDK for building an AgorAI store adapter: implement a few interfaces, call run(), deploy one container.",
@@ -49,8 +49,9 @@
     "sync:version": "node scripts/sync-version.mjs",
     "version:check": "node scripts/sync-version.mjs --check",
     "version": "node scripts/sync-version.mjs && git add -A",
+    "test": "pnpm run build && pnpm run test:smoke && pnpm run test:woocommerce",
     "test:smoke": "node test/smoke.js",
-    "verify": "pnpm run checkup && pnpm run version:check && pnpm run build && pnpm run verify:template && pnpm run test:smoke && pnpm run test:woocommerce",
+    "verify": "pnpm run checkup && pnpm run version:check && pnpm run verify:template && pnpm run test",
     "verify:template": "tsc -p tsconfig.template-check.json",
     "build:template-test": "tsc -p tsconfig.template-test.json",
     "test:woocommerce": "pnpm run build:template-test && node test/woocommerce.js"
