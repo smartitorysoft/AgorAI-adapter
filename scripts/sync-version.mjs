@@ -1,32 +1,29 @@
 /**
- * `package.json` is the version. Everything else is written from it.
+ * `package.json` is the version. The two places that cannot read it are
+ * written from it.
  *
- * The number used to live in four places — `package.json`, the `SDK_VERSION`
- * literal, the pin in each template's `package.json`, and the install line in
- * the README — and each copy was maintained by hand behind a check that failed
- * the build when they disagreed. That check did its job and was still the wrong
- * shape: it turned every release into "bump, watch CI fail, bump again", four
- * times over.
+ * The number used to live in four places, each maintained by hand behind a
+ * check that failed the build when they disagreed. `SDK_VERSION` is no longer
+ * one of them — `src/runtime/version.ts` reads `package.json` at runtime now,
+ * which is the only real fix: a copy that does not exist cannot go stale.
  *
- * So the copies stay, because each one has to be a literal where it sits — a
- * published package cannot compute its own version at install time, and a
- * template is a standalone project with no workspace to ask — but nobody types
- * them any more.
+ * These two cannot do that, and the reason is the same for both: they are
+ * consumed by a project that does not have this package installed yet.
+ *
+ *  - **The template pins** are `github:<repo>#v<version>` in projects that get
+ *    copied out of this repository entirely. Only a literal tag installs.
+ *  - **The README's install line** is the first command an adapter author
+ *    types, on the public mirror, before anything of ours is on their disk.
+ *
+ * Neither is read at runtime, so neither can break a running adapter — they go
+ * stale between a bump and a release, and `--check` is wired into `verify`,
+ * which is the release, rather than into every CI run.
  *
  *   node scripts/sync-version.mjs           # write them
  *   node scripts/sync-version.mjs --check   # fail if any is stale
  *
- * `--check` is what `checkup` and the publish workflow run, so CI reports drift
- * rather than quietly rewriting the tree it was asked to verify.
- *
- * Why each copy cannot simply be derived where it is used:
- *
- *  - **`SDK_VERSION`** is reported as `sdkVersion` in every manifest, and it is
- *    read by code that has been bundled, published to npm and mirrored to a
- *    public repo. Reading `package.json` at runtime would drag a file outside
- *    `rootDir` into the build output.
- *  - **The template pins** are `github:<repo>#v<version>` in projects that get
- *    copied out of this repository entirely. Only the tag makes them install.
+ * `--check` reports drift rather than quietly rewriting the tree it was asked
+ * to verify; `pnpm version <bump>` runs the writing half for you.
  */
 import { readFileSync, writeFileSync } from 'node:fs'
 import { readdirSync } from 'node:fs'
@@ -51,11 +48,6 @@ if (!/^\d+\.\d+\.\d+(-[\w.]+)?$/.test(VERSION)) {
  * not a second place the public repo's name is written.
  */
 const RULES = [
-  {
-    file: join(HERE, 'src', 'runtime', 'version.ts'),
-    pattern: /(SDK_VERSION\s*=\s*')([^']+)(')/,
-    what: 'the SDK_VERSION literal',
-  },
   {
     file: join(HERE, 'README.md'),
     pattern: /(pnpm add github:[\w.-]+\/[\w.-]+#v)([^\s`]+)()/,
